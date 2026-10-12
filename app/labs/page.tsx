@@ -20,6 +20,16 @@ export default function Labs() {
             <li>
                 <Link href="/labs/lab5">Lab 5</Link>
             </li>
+            <li>
+                <a
+                    href="https://github.com/mhi11/webdev-client"
+                    id="wd-github"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    Github
+                </a>
+            </li>
         </ul>
     </div>
   );
