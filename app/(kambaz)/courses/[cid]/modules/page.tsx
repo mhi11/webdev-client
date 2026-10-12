@@ -4,11 +4,32 @@ import Lesson from "./Lesson";
 export default function Modules() {
   return (
         <div>
-            <button>Collapse All</button> <button>View Progress</button>{" "}
-            <select defaultValue="publish-all">
-                <option value="publish-all">Publish All</option>
-            </select>{" "}
-            <button>+ Module</button>
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+            >
+              Collapse All
+            </button>
+            <button
+              type="button"
+              className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+            >
+              View Progress
+            </button>
+            <select
+              defaultValue="publish-all"
+              className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+            >
+              <option value="publish-all">Publish All</option>
+            </select>
+            <button
+              type="button"
+              className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+            >
+              + Module
+            </button>
+            </div>
             <ul id="wd-modules">
                 <Module title="Week 1, Lecture 1 - Course Introduction, Syllabus, Agenda">
                     <Lesson title="LEARNING OBJECTIVES">
@@ -35,6 +56,17 @@ export default function Modules() {
                     {/* Expand lessons on your own */}
                 </Module>
                 <Module title="Week 3" />
+                <Module title="Week 4 - Wrap Up and Review">
+                    <Lesson title="SUMMARY">
+                        <li className="wd-content-item">Review of key topics from the course</li>
+                        <li className="wd-content-item">Open Q&amp;A session</li>
+                    </Lesson>
+                </Module>
+                <Module title="Sample module (AI)">
+                    <Lesson title="Sample lesson (AI)">
+                        <li className="wd-content-item">Placeholder content item for this sample lesson</li>
+                    </Lesson>
+                </Module>
             </ul>
         </div>
     );
