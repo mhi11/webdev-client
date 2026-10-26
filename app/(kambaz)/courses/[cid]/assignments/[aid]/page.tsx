@@ -1,59 +1,61 @@
 import Link from "next/link";
+import * as db from "../../../../database";
 
 export default async function AssignmentEditor({
   params,
 }: {
   params: Promise<{ cid: string; aid: string }>;
 }) {
-  const { cid } = await params;
+  const { cid, aid } = await params;
+  const assignment = db.assignments.find((a) => a._id === aid);
 
   return (
-    <div id="wd-assignments-editor" className="max-w-3xl">
-      <div className="mb-4">
-        <label
-          htmlFor="wd-name"
-          className="mb-1 block text-sm font-medium"
-        >
-          Assignment Name
-        </label>
+    <div id="wd-assignments-editor">
+      <label htmlFor="wd-name">Assignment Name</label>
+      <input id="wd-name" defaultValue={assignment?.title ?? ""} /> <br /><br />
+      <textarea
+        id="wd-description"
+        defaultValue={assignment?.description ?? ""}
+        rows={8}
+        className="w-full"
+      /> <br />
 
-        <input
-          id="wd-name"
-          defaultValue="A1 - ENV + HTML"
-          className="w-full rounded border border-neutral-300 px-3 py-2"
-        />
-      </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="wd-description"
-          className="mb-1 block text-sm font-medium"
-        >
-          Description
-        </label>
-
-        <textarea
-          id="wd-description"
-          defaultValue="The assignment is available online. Submit a link to the landing page."
-          rows={5}
-          className="w-full rounded border border-neutral-300 px-3 py-2"
-        />
-      </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="wd-points"
-          className="mb-1 block text-sm font-medium"
-        >
-          Points
-        </label>
-
-        <input
-          id="wd-points"
-          defaultValue={100}
-          className="w-full rounded border border-neutral-300 px-3 py-2"
-        />
-      </div>
+      <table>
+        <tbody>
+          <tr>
+            <td align="right" valign="top">
+              <label htmlFor="wd-points">Points</label>
+            </td>
+            <td>
+              <input id="wd-points" defaultValue={assignment?.points ?? 100} />
+            </td>
+          </tr>
+          <tr>
+            <td align="right" valign="top">
+              <label htmlFor="wd-due-date">Due</label>
+            </td>
+            <td>
+              <input
+                type="date"
+                id="wd-due-date"
+                defaultValue={assignment?.due}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td align="right" valign="top">
+              <label htmlFor="wd-available-from">Available from</label>
+            </td>
+            <td>
+              <input
+                type="date"
+                id="wd-available-from"
+                defaultValue={assignment?.available}
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
       <div className="mb-4">
         <label
@@ -162,70 +164,14 @@ export default async function AssignmentEditor({
             className="w-full rounded border border-neutral-300 px-3 py-2"
           />
         </div>
-
-        <div className="mb-4">
-          <label
-            htmlFor="wd-due-date"
-            className="mb-1 block text-sm font-medium"
-          >
-            Due Date
-          </label>
-
-          <input
-            type="date"
-            id="wd-due-date"
-            className="w-full rounded border border-neutral-300 px-3 py-2"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label
-            htmlFor="wd-available-from"
-            className="mb-1 block text-sm font-medium"
-          >
-            Available from
-          </label>
-
-          <input
-            type="date"
-            id="wd-available-from"
-            className="w-full rounded border border-neutral-300 px-3 py-2"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label
-            htmlFor="wd-available-until"
-            className="mb-1 block text-sm font-medium"
-          >
-            Until
-          </label>
-
-          <input
-            type="date"
-            id="wd-available-until"
-            className="w-full rounded border border-neutral-300 px-3 py-2"
-          />
-        </div>
       </div>
-
-      <div className="flex justify-end gap-2 border-t border-neutral-300 pt-4">
-        <Link
-          href={`/courses/${cid}/assignments`}
-          id="wd-cancel"
-          className="rounded border border-neutral-300 bg-white px-4 py-2 text-black no-underline"
-        >
-          Cancel
-        </Link>
-
-        <Link
-          href={`/courses/${cid}/assignments`}
-          id="wd-save"
-          className="rounded bg-red-600 px-4 py-2 text-white no-underline"
-        >
-          Save
-        </Link>
-      </div>
+      <br />
+      <Link href={`/courses/${cid}/assignments`} id="wd-cancel">
+        Cancel
+      </Link>{" "}
+      <Link href={`/courses/${cid}/assignments`} id="wd-save">
+        Save
+      </Link>
     </div>
   );
 }
