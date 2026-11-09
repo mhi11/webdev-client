@@ -42,7 +42,7 @@ export default function CoursesLayout({
       )
     : false;
 
-  if (!currentUser || !isEnrolled) {
+  if (currentUser && !isEnrolled) {
     redirect("/dashboard");
   }
 
