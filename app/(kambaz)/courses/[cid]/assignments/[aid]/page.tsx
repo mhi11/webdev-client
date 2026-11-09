@@ -1,63 +1,207 @@
-import Link from "next/link";
-import * as db from "../../../../database";
 
-export default async function AssignmentEditor({
-  params,
-}: {
-  params: Promise<{ cid: string; aid: string }>;
-}) {
-  const { cid, aid } = await params;
-  const assignment = db.assignments.find((a) => a._id === aid);
+"use client";
+
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import {
+  useAssignmentsStore,
+  type Assignment,
+} from "../../../../store/assignmentsStore";
+
+export default function AssignmentEditor() {
+  const { cid, aid } = useParams<{
+    cid: string;
+    aid: string;
+  }>();
+
+  const router = useRouter();
+
+  const assignments = useAssignmentsStore(
+    (state) => state.assignments
+  );
+  const addAssignment = useAssignmentsStore(
+    (state) => state.addAssignment
+  );
+  const updateAssignment = useAssignmentsStore(
+    (state) => state.updateAssignment
+  );
+
+  const existingAssignment = assignments.find(
+    (a) => a._id === aid && a.course === cid
+  );
+
+  const isNew = aid === "new";
+
+  const [assignment, setAssignment] = useState<Assignment>(
+    () =>
+      existingAssignment ?? {
+        _id: "",
+        title: "",
+        description: "",
+        points: 100,
+        due: "",
+        available: "",
+        until: "",
+        course: cid,
+      }
+  );
+
+  const updateField = (changes: Partial<Assignment>) => {
+    setAssignment((previous) => ({
+      ...previous,
+      ...changes,
+    }));
+  };
+
+  const saveAssignment = () => {
+    if (!assignment.title.trim()) {
+      alert("Please enter an assignment name.");
+      return;
+    }
+
+    if (isNew) {
+      addAssignment({
+        title: assignment.title.trim(),
+        description: assignment.description,
+        points: assignment.points,
+        due: assignment.due,
+        available: assignment.available,
+        until: assignment.until,
+        course: cid,
+      });
+    } else {
+      updateAssignment({
+        ...assignment,
+        title: assignment.title.trim(),
+        course: cid,
+      });
+    }
+
+    router.push(`/courses/${cid}/assignments`);
+  };
+
+  const cancel = () => {
+    router.push(`/courses/${cid}/assignments`);
+  };
+
+  if (!isNew && !existingAssignment) {
+    return <p>Assignment not found.</p>;
+  }
 
   return (
     <div id="wd-assignments-editor">
-      <label htmlFor="wd-name">Assignment Name</label>
-      <input id="wd-name" defaultValue={assignment?.title ?? ""} /> <br /><br />
+      <label htmlFor="wd-name">
+        Assignment Name
+      </label>
+      <input
+        id="wd-name"
+        className="rounded border border-neutral-300 px-3 py-2"
+        value={assignment.title}
+        onChange={(e) =>
+          updateField({ title: e.target.value })
+        }
+      />
+
+      <br />
+      <br />
+
       <textarea
         id="wd-description"
-        defaultValue={assignment?.description ?? ""}
         rows={8}
-        className="w-full"
-      /> <br />
+        className="w-full rounded border border-neutral-300 p-2"
+        value={assignment.description}
+        onChange={(e) =>
+          updateField({ description: e.target.value })
+        }
+      />
+
+      <br />
 
       <table>
         <tbody>
           <tr>
             <td align="right" valign="top">
-              <label htmlFor="wd-points">Points</label>
+              <label htmlFor="wd-points">
+                Points
+              </label>
             </td>
             <td>
-              <input id="wd-points" defaultValue={assignment?.points ?? 100} />
+              <input
+                id="wd-points"
+                type="number"
+                className="rounded border p-2"
+                value={assignment.points}
+                onChange={(e) =>
+                  updateField({
+                    points: Number(e.target.value),
+                  })
+                }
+              />
             </td>
           </tr>
+
           <tr>
             <td align="right" valign="top">
-              <label htmlFor="wd-due-date">Due</label>
+              <label htmlFor="wd-due-date">
+                Due
+              </label>
             </td>
             <td>
               <input
                 type="date"
                 id="wd-due-date"
-                defaultValue={assignment?.due}
+                className="rounded border p-2"
+                value={assignment.due}
+                onChange={(e) =>
+                  updateField({ due: e.target.value })
+                }
               />
             </td>
           </tr>
+
           <tr>
             <td align="right" valign="top">
-              <label htmlFor="wd-available-from">Available from</label>
+              <label htmlFor="wd-available-from">
+                Available from
+              </label>
             </td>
             <td>
               <input
                 type="date"
                 id="wd-available-from"
-                defaultValue={assignment?.available}
+                className="rounded border p-2"
+                value={assignment.available}
+                onChange={(e) =>
+                  updateField({
+                    available: e.target.value,
+                  })
+                }
+              />
+            </td>
+          </tr>
+
+          <tr>
+            <td align="right" valign="top">
+              <label htmlFor="wd-available-until">
+                Available until
+              </label>
+            </td>
+            <td>
+              <input
+                type="date"
+                id="wd-available-until"
+                className="rounded border p-2"
+                value={assignment.until ?? ""}
+                onChange={(e) =>
+                  updateField({ until: e.target.value })
+                }
               />
             </td>
           </tr>
         </tbody>
       </table>
 
-      <div className="mb-4">
+      <div className="mb-4 mt-4">
         <label
           htmlFor="wd-group"
           className="mb-1 block text-sm font-medium"
@@ -121,17 +265,23 @@ export default async function AssignmentEditor({
 
         <div className="mb-2 flex items-center gap-2">
           <input type="checkbox" id="wd-text-entry" />
-          <label htmlFor="wd-text-entry">Text Entry</label>
+          <label htmlFor="wd-text-entry">
+            Text Entry
+          </label>
         </div>
 
         <div className="mb-2 flex items-center gap-2">
           <input type="checkbox" id="wd-website-url" />
-          <label htmlFor="wd-website-url">Website URL</label>
+          <label htmlFor="wd-website-url">
+            Website URL
+          </label>
         </div>
 
         <div className="mb-2 flex items-center gap-2">
           <input type="checkbox" id="wd-media-recordings" />
-          <label htmlFor="wd-media-recordings">Media Recordings</label>
+          <label htmlFor="wd-media-recordings">
+            Media Recordings
+          </label>
         </div>
 
         <div className="mb-2 flex items-center gap-2">
@@ -143,12 +293,16 @@ export default async function AssignmentEditor({
 
         <div className="flex items-center gap-2">
           <input type="checkbox" id="wd-file-upload" />
-          <label htmlFor="wd-file-upload">File Uploads</label>
+          <label htmlFor="wd-file-upload">
+            File Uploads
+          </label>
         </div>
       </div>
 
       <div className="mb-6">
-        <h4 className="mb-3 text-lg font-semibold">Assign</h4>
+        <h4 className="mb-3 text-lg font-semibold">
+          Assign
+        </h4>
 
         <div className="mb-4">
           <label
@@ -165,13 +319,26 @@ export default async function AssignmentEditor({
           />
         </div>
       </div>
-      <br />
-      <Link href={`/courses/${cid}/assignments`} id="wd-cancel">
-        Cancel
-      </Link>{" "}
-      <Link href={`/courses/${cid}/assignments`} id="wd-save">
-        Save
-      </Link>
+
+      <div className="mt-4 flex gap-3">
+        <button
+          type="button"
+          onClick={cancel}
+          id="wd-cancel"
+          className="rounded border border-neutral-300 bg-white px-4 py-2"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          onClick={saveAssignment}
+          id="wd-save"
+          className="rounded bg-red-600 px-4 py-2 font-medium text-white"
+        >
+          Save
+        </button>
+      </div>
     </div>
   );
 }
